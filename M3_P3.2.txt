@@ -1,0 +1,1052 @@
+
+C:\Users\Admin>mysql -u root -p
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.20 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| bank_accounts_mng  |
+| car_showroom       |
+| classicmodels      |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| testdatabase       |
+| world              |
++--------------------+
+10 rows in set (0.00 sec)
+
+mysql> use classicmodels;
+Database changed
+mysql> show tables;
++-------------------------+
+| Tables_in_classicmodels |
++-------------------------+
+| customers               |
+| employees               |
+| offices                 |
+| orderdetails            |
+| orders                  |
+| payments                |
+| productlines            |
+| products                |
++-------------------------+
+8 rows in set (0.01 sec)
+
+mysql> describe customers;
++------------------------+---------------+------+-----+---------+-------+
+| Field                  | Type          | Null | Key | Default | Extra |
++------------------------+---------------+------+-----+---------+-------+
+| customerNumber         | int           | NO   | PRI | NULL    |       |
+| customerName           | varchar(50)   | NO   |     | NULL    |       |
+| contactLastName        | varchar(50)   | NO   |     | NULL    |       |
+| contactFirstName       | varchar(50)   | NO   |     | NULL    |       |
+| phone                  | varchar(50)   | NO   |     | NULL    |       |
+| addressLine1           | varchar(50)   | NO   |     | NULL    |       |
+| addressLine2           | varchar(50)   | YES  |     | NULL    |       |
+| city                   | varchar(50)   | NO   |     | NULL    |       |
+| state                  | varchar(50)   | YES  |     | NULL    |       |
+| postalCode             | varchar(15)   | YES  |     | NULL    |       |
+| country                | varchar(50)   | NO   |     | NULL    |       |
+| salesRepEmployeeNumber | int           | YES  | MUL | NULL    |       |
+| creditLimit            | decimal(10,2) | YES  |     | NULL    |       |
++------------------------+---------------+------+-----+---------+-------+
+13 rows in set (0.00 sec)
+
+mysql> describe orders;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| orderNumber    | int         | NO   | PRI | NULL    |       |
+| orderDate      | date        | NO   |     | NULL    |       |
+| requiredDate   | date        | NO   |     | NULL    |       |
+| shippedDate    | date        | YES  |     | NULL    |       |
+| status         | varchar(15) | NO   |     | NULL    |       |
+| comments       | text        | YES  |     | NULL    |       |
+| customerNumber | int         | NO   | MUL | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int           | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT customers.customerNumber, customerName, phone, paymentDate, amount
+    -> FROM customers
+    -> INNER JOIN payments
+    -> ON customers.customerNumber = payments.customerNumber
+    -> WHERE city = 'Las Vegas';
++----------------+--------------------+------------+-------------+----------+
+| customerNumber | customerName       | phone      | paymentDate | amount   |
++----------------+--------------------+------------+-------------+----------+
+|            112 | Signal Gift Stores | 7025551838 | 2004-12-17  | 14191.12 |
+|            112 | Signal Gift Stores | 7025551838 | 2003-06-06  | 32641.98 |
+|            112 | Signal Gift Stores | 7025551838 | 2004-08-20  | 33347.88 |
++----------------+--------------------+------------+-------------+----------+
+3 rows in set (0.01 sec)
+
+mysql> SELECT customers.customerNumber, customers.customerName, orders.orderNumber, orders.status
+    -> FROM customers
+    ->
+    -> LEFT JOIN orders
+    -> ON customers.customerNumber = orders.customerNumber;
++----------------+------------------------------------+-------------+------------+
+| customerNumber | customerName                       | orderNumber | status     |
++----------------+------------------------------------+-------------+------------+
+|            103 | Atelier graphique                  |       10123 | Shipped    |
+|            103 | Atelier graphique                  |       10298 | Shipped    |
+|            103 | Atelier graphique                  |       10345 | Shipped    |
+|            112 | Signal Gift Stores                 |       10124 | Shipped    |
+|            112 | Signal Gift Stores                 |       10278 | Shipped    |
+|            112 | Signal Gift Stores                 |       10346 | Shipped    |
+|            114 | Australian Collectors, Co.         |       10120 | Shipped    |
+|            114 | Australian Collectors, Co.         |       10125 | Shipped    |
+|            114 | Australian Collectors, Co.         |       10223 | Shipped    |
+|            114 | Australian Collectors, Co.         |       10342 | Shipped    |
+|            114 | Australian Collectors, Co.         |       10347 | Shipped    |
+|            119 | La Rochelle Gifts                  |       10275 | Shipped    |
+|            119 | La Rochelle Gifts                  |       10315 | Shipped    |
+|            119 | La Rochelle Gifts                  |       10375 | Shipped    |
+|            119 | La Rochelle Gifts                  |       10425 | In Process |
+|            121 | Baane Mini Imports                 |       10103 | Shipped    |
+|            121 | Baane Mini Imports                 |       10158 | Shipped    |
+|            121 | Baane Mini Imports                 |       10309 | Shipped    |
+|            121 | Baane Mini Imports                 |       10325 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10113 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10135 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10142 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10182 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10229 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10271 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10282 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10312 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10335 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10357 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10368 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10371 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10382 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10385 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10390 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10396 | Shipped    |
+|            124 | Mini Gifts Distributors Ltd.       |       10421 | In Process |
+|            125 | Havel & Zbyszek Co                 |        NULL | NULL       |
+|            128 | Blauer See Auto, Co.               |       10101 | Shipped    |
+|            128 | Blauer See Auto, Co.               |       10230 | Shipped    |
+|            128 | Blauer See Auto, Co.               |       10300 | Shipped    |
+|            128 | Blauer See Auto, Co.               |       10323 | Shipped    |
+|            129 | Mini Wheels Co.                    |       10111 | Shipped    |
+|            129 | Mini Wheels Co.                    |       10201 | Shipped    |
+|            129 | Mini Wheels Co.                    |       10333 | Shipped    |
+|            131 | Land of Toys Inc.                  |       10107 | Shipped    |
+|            131 | Land of Toys Inc.                  |       10248 | Cancelled  |
+|            131 | Land of Toys Inc.                  |       10292 | Shipped    |
+|            131 | Land of Toys Inc.                  |       10329 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10104 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10128 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10133 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10153 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10156 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10190 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10203 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10205 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10212 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10244 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10246 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10262 | Cancelled  |
+|            141 | Euro+ Shopping Channel             |       10279 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10311 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10350 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10355 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10358 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10378 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10379 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10380 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10383 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10386 | Resolved   |
+|            141 | Euro+ Shopping Channel             |       10394 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10412 | Shipped    |
+|            141 | Euro+ Shopping Channel             |       10417 | Disputed   |
+|            141 | Euro+ Shopping Channel             |       10424 | In Process |
+|            144 | Volvo Model Replicas, Co           |       10112 | Shipped    |
+|            144 | Volvo Model Replicas, Co           |       10320 | Shipped    |
+|            144 | Volvo Model Replicas, Co           |       10326 | Shipped    |
+|            144 | Volvo Model Replicas, Co           |       10334 | On Hold    |
+|            145 | Danish Wholesale Imports           |       10105 | Shipped    |
+|            145 | Danish Wholesale Imports           |       10238 | Shipped    |
+|            145 | Danish Wholesale Imports           |       10256 | Shipped    |
+|            145 | Danish Wholesale Imports           |       10327 | Resolved   |
+|            145 | Danish Wholesale Imports           |       10406 | Disputed   |
+|            146 | Saveley & Henriot, Co.             |       10194 | Shipped    |
+|            146 | Saveley & Henriot, Co.             |       10208 | Shipped    |
+|            146 | Saveley & Henriot, Co.             |       10227 | Shipped    |
+|            148 | Dragon Souveniers, Ltd.            |       10117 | Shipped    |
+|            148 | Dragon Souveniers, Ltd.            |       10150 | Shipped    |
+|            148 | Dragon Souveniers, Ltd.            |       10165 | Shipped    |
+|            148 | Dragon Souveniers, Ltd.            |       10277 | Shipped    |
+|            148 | Dragon Souveniers, Ltd.            |       10387 | Shipped    |
+|            151 | Muscle Machine Inc                 |       10127 | Shipped    |
+|            151 | Muscle Machine Inc                 |       10204 | Shipped    |
+|            151 | Muscle Machine Inc                 |       10267 | Shipped    |
+|            151 | Muscle Machine Inc                 |       10349 | Shipped    |
+|            157 | Diecast Classics Inc.              |       10272 | Shipped    |
+|            157 | Diecast Classics Inc.              |       10281 | Shipped    |
+|            157 | Diecast Classics Inc.              |       10318 | Shipped    |
+|            157 | Diecast Classics Inc.              |       10422 | In Process |
+|            161 | Technics Stores Inc.               |       10140 | Shipped    |
+|            161 | Technics Stores Inc.               |       10168 | Shipped    |
+|            161 | Technics Stores Inc.               |       10317 | Shipped    |
+|            161 | Technics Stores Inc.               |       10362 | Shipped    |
+|            166 | Handji Gifts& Co                   |       10217 | Shipped    |
+|            166 | Handji Gifts& Co                   |       10259 | Shipped    |
+|            166 | Handji Gifts& Co                   |       10288 | Shipped    |
+|            166 | Handji Gifts& Co                   |       10409 | Shipped    |
+|            167 | Herkku Gifts                       |       10181 | Shipped    |
+|            167 | Herkku Gifts                       |       10188 | Shipped    |
+|            167 | Herkku Gifts                       |       10289 | Shipped    |
+|            168 | American Souvenirs Inc             |        NULL | NULL       |
+|            169 | Porto Imports Co.                  |        NULL | NULL       |
+|            171 | Daedalus Designs Imports           |       10180 | Shipped    |
+|            171 | Daedalus Designs Imports           |       10224 | Shipped    |
+|            172 | La Corne D'abondance, Co.          |       10114 | Shipped    |
+|            172 | La Corne D'abondance, Co.          |       10286 | Shipped    |
+|            172 | La Corne D'abondance, Co.          |       10336 | Shipped    |
+|            173 | Cambridge Collectables Co.         |       10228 | Shipped    |
+|            173 | Cambridge Collectables Co.         |       10249 | Shipped    |
+|            175 | Gift Depot Inc.                    |       10172 | Shipped    |
+|            175 | Gift Depot Inc.                    |       10263 | Shipped    |
+|            175 | Gift Depot Inc.                    |       10413 | Shipped    |
+|            177 | Osaka Souveniers Co.               |       10210 | Shipped    |
+|            177 | Osaka Souveniers Co.               |       10240 | Shipped    |
+|            181 | Vitachrome Inc.                    |       10102 | Shipped    |
+|            181 | Vitachrome Inc.                    |       10237 | Shipped    |
+|            181 | Vitachrome Inc.                    |       10324 | Shipped    |
+|            186 | Toys of Finland, Co.               |       10155 | Shipped    |
+|            186 | Toys of Finland, Co.               |       10299 | Shipped    |
+|            186 | Toys of Finland, Co.               |       10377 | Shipped    |
+|            187 | AV Stores, Co.                     |       10110 | Shipped    |
+|            187 | AV Stores, Co.                     |       10306 | Shipped    |
+|            187 | AV Stores, Co.                     |       10332 | Shipped    |
+|            189 | Clover Collections, Co.            |       10220 | Shipped    |
+|            189 | Clover Collections, Co.            |       10297 | Shipped    |
+|            198 | Auto-Moto Classics Inc.            |       10130 | Shipped    |
+|            198 | Auto-Moto Classics Inc.            |       10290 | Shipped    |
+|            198 | Auto-Moto Classics Inc.            |       10352 | Shipped    |
+|            201 | UK Collectables, Ltd.              |       10253 | Cancelled  |
+|            201 | UK Collectables, Ltd.              |       10302 | Shipped    |
+|            201 | UK Collectables, Ltd.              |       10403 | Shipped    |
+|            202 | Canadian Gift Exchange Network     |       10206 | Shipped    |
+|            202 | Canadian Gift Exchange Network     |       10313 | Shipped    |
+|            204 | Online Mini Collectables           |       10276 | Shipped    |
+|            204 | Online Mini Collectables           |       10294 | Shipped    |
+|            205 | Toys4GrownUps.com                  |       10145 | Shipped    |
+|            205 | Toys4GrownUps.com                  |       10189 | Shipped    |
+|            205 | Toys4GrownUps.com                  |       10367 | Resolved   |
+|            206 | Asian Shopping Network, Co         |        NULL | NULL       |
+|            209 | Mini Caravy                        |       10241 | Shipped    |
+|            209 | Mini Caravy                        |       10255 | Shipped    |
+|            209 | Mini Caravy                        |       10405 | Shipped    |
+|            211 | King Kong Collectables, Co.        |       10187 | Shipped    |
+|            211 | King Kong Collectables, Co.        |       10200 | Shipped    |
+|            216 | Enaco Distributors                 |       10118 | Shipped    |
+|            216 | Enaco Distributors                 |       10197 | Shipped    |
+|            216 | Enaco Distributors                 |       10340 | Shipped    |
+|            219 | Boards & Toys Co.                  |       10154 | Shipped    |
+|            219 | Boards & Toys Co.                  |       10376 | Shipped    |
+|            223 | Natürlich Autos                    |        NULL | NULL       |
+|            227 | Heintze Collectables               |       10161 | Shipped    |
+|            227 | Heintze Collectables               |       10314 | Shipped    |
+|            233 | Québec Home Shopping Network       |       10171 | Shipped    |
+|            233 | Québec Home Shopping Network       |       10261 | Shipped    |
+|            233 | Québec Home Shopping Network       |       10411 | Shipped    |
+|            237 | ANG Resellers                      |        NULL | NULL       |
+|            239 | Collectable Mini Designs Co.       |       10222 | Shipped    |
+|            239 | Collectable Mini Designs Co.       |       10226 | Shipped    |
+|            240 | giftsbymail.co.uk                  |       10232 | Shipped    |
+|            240 | giftsbymail.co.uk                  |       10316 | Shipped    |
+|            242 | Alpha Cognac                       |       10136 | Shipped    |
+|            242 | Alpha Cognac                       |       10178 | Shipped    |
+|            242 | Alpha Cognac                       |       10397 | Shipped    |
+|            247 | Messner Shopping Network           |        NULL | NULL       |
+|            249 | Amica Models & Co.                 |       10280 | Shipped    |
+|            249 | Amica Models & Co.                 |       10293 | Shipped    |
+|            250 | Lyon Souveniers                    |       10134 | Shipped    |
+|            250 | Lyon Souveniers                    |       10356 | Shipped    |
+|            250 | Lyon Souveniers                    |       10395 | Shipped    |
+|            256 | Auto Associés & Cie.               |       10216 | Shipped    |
+|            256 | Auto Associés & Cie.               |       10304 | Shipped    |
+|            259 | Toms Spezialitäten, Ltd            |       10191 | Shipped    |
+|            259 | Toms Spezialitäten, Ltd            |       10310 | Shipped    |
+|            260 | Royal Canadian Collectables, Ltd.  |       10235 | Shipped    |
+|            260 | Royal Canadian Collectables, Ltd.  |       10283 | Shipped    |
+|            273 | Franken Gifts, Co                  |        NULL | NULL       |
+|            276 | Anna's Decorations, Ltd            |       10148 | Shipped    |
+|            276 | Anna's Decorations, Ltd            |       10169 | Shipped    |
+|            276 | Anna's Decorations, Ltd            |       10370 | Shipped    |
+|            276 | Anna's Decorations, Ltd            |       10391 | Shipped    |
+|            278 | Rovelli Gifts                      |       10106 | Shipped    |
+|            278 | Rovelli Gifts                      |       10173 | Shipped    |
+|            278 | Rovelli Gifts                      |       10328 | Shipped    |
+|            282 | Souveniers And Things Co.          |       10139 | Shipped    |
+|            282 | Souveniers And Things Co.          |       10270 | Shipped    |
+|            282 | Souveniers And Things Co.          |       10361 | Shipped    |
+|            282 | Souveniers And Things Co.          |       10420 | In Process |
+|            286 | Marta's Replicas Co.               |       10285 | Shipped    |
+|            286 | Marta's Replicas Co.               |       10305 | Shipped    |
+|            293 | BG&E Collectables                  |        NULL | NULL       |
+|            298 | Vida Sport, Ltd                    |       10225 | Shipped    |
+|            298 | Vida Sport, Ltd                    |       10287 | Shipped    |
+|            299 | Norway Gifts By Mail, Co.          |       10284 | Shipped    |
+|            299 | Norway Gifts By Mail, Co.          |       10301 | Shipped    |
+|            303 | Schuyler Imports                   |        NULL | NULL       |
+|            307 | Der Hund Imports                   |        NULL | NULL       |
+|            311 | Oulu Toy Supplies, Inc.            |       10151 | Shipped    |
+|            311 | Oulu Toy Supplies, Inc.            |       10239 | Shipped    |
+|            311 | Oulu Toy Supplies, Inc.            |       10373 | Shipped    |
+|            314 | Petit Auto                         |       10221 | Shipped    |
+|            314 | Petit Auto                         |       10273 | Shipped    |
+|            314 | Petit Auto                         |       10423 | In Process |
+|            319 | Mini Classics                      |       10195 | Shipped    |
+|            319 | Mini Classics                      |       10308 | Shipped    |
+|            320 | Mini Creations Ltd.                |       10143 | Shipped    |
+|            320 | Mini Creations Ltd.                |       10185 | Shipped    |
+|            320 | Mini Creations Ltd.                |       10365 | Shipped    |
+|            321 | Corporate Gift Ideas Co.           |       10159 | Shipped    |
+|            321 | Corporate Gift Ideas Co.           |       10162 | Shipped    |
+|            321 | Corporate Gift Ideas Co.           |       10381 | Shipped    |
+|            321 | Corporate Gift Ideas Co.           |       10384 | Shipped    |
+|            323 | Down Under Souveniers, Inc         |       10132 | Shipped    |
+|            323 | Down Under Souveniers, Inc         |       10254 | Shipped    |
+|            323 | Down Under Souveniers, Inc         |       10354 | Shipped    |
+|            323 | Down Under Souveniers, Inc         |       10393 | Shipped    |
+|            323 | Down Under Souveniers, Inc         |       10404 | Shipped    |
+|            324 | Stylish Desk Decors, Co.           |       10129 | Shipped    |
+|            324 | Stylish Desk Decors, Co.           |       10175 | Shipped    |
+|            324 | Stylish Desk Decors, Co.           |       10351 | Shipped    |
+|            328 | Tekni Collectables Inc.            |       10233 | Shipped    |
+|            328 | Tekni Collectables Inc.            |       10251 | Shipped    |
+|            328 | Tekni Collectables Inc.            |       10401 | On Hold    |
+|            333 | Australian Gift Network, Co        |       10152 | Shipped    |
+|            333 | Australian Gift Network, Co        |       10174 | Shipped    |
+|            333 | Australian Gift Network, Co        |       10374 | Shipped    |
+|            334 | Suominen Souveniers                |       10141 | Shipped    |
+|            334 | Suominen Souveniers                |       10247 | Shipped    |
+|            334 | Suominen Souveniers                |       10363 | Shipped    |
+|            335 | Cramer Spezialitäten, Ltd          |        NULL | NULL       |
+|            339 | Classic Gift Ideas, Inc            |       10183 | Shipped    |
+|            339 | Classic Gift Ideas, Inc            |       10307 | Shipped    |
+|            344 | CAF Imports                        |       10177 | Shipped    |
+|            344 | CAF Imports                        |       10231 | Shipped    |
+|            347 | Men 'R' US Retailers, Ltd.         |       10160 | Shipped    |
+|            347 | Men 'R' US Retailers, Ltd.         |       10209 | Shipped    |
+|            348 | Asian Treasures, Inc.              |        NULL | NULL       |
+|            350 | Marseille Mini Autos               |       10122 | Shipped    |
+|            350 | Marseille Mini Autos               |       10344 | Shipped    |
+|            350 | Marseille Mini Autos               |       10364 | Shipped    |
+|            353 | Reims Collectables                 |       10121 | Shipped    |
+|            353 | Reims Collectables                 |       10137 | Shipped    |
+|            353 | Reims Collectables                 |       10343 | Shipped    |
+|            353 | Reims Collectables                 |       10359 | Shipped    |
+|            353 | Reims Collectables                 |       10398 | Shipped    |
+|            356 | SAR Distributors, Co               |        NULL | NULL       |
+|            357 | GiftsForHim.com                    |       10202 | Shipped    |
+|            357 | GiftsForHim.com                    |       10260 | Cancelled  |
+|            357 | GiftsForHim.com                    |       10410 | Shipped    |
+|            361 | Kommission Auto                    |        NULL | NULL       |
+|            362 | Gifts4AllAges.com                  |       10264 | Shipped    |
+|            362 | Gifts4AllAges.com                  |       10295 | Shipped    |
+|            362 | Gifts4AllAges.com                  |       10414 | On Hold    |
+|            363 | Online Diecast Creations Co.       |       10100 | Shipped    |
+|            363 | Online Diecast Creations Co.       |       10192 | Shipped    |
+|            363 | Online Diecast Creations Co.       |       10322 | Shipped    |
+|            369 | Lisboa Souveniers, Inc             |        NULL | NULL       |
+|            376 | Precious Collectables              |        NULL | NULL       |
+|            379 | Collectables For Less Inc.         |       10147 | Shipped    |
+|            379 | Collectables For Less Inc.         |       10274 | Shipped    |
+|            379 | Collectables For Less Inc.         |       10369 | Shipped    |
+|            381 | Royale Belge                       |       10116 | Shipped    |
+|            381 | Royale Belge                       |       10144 | Shipped    |
+|            381 | Royale Belge                       |       10338 | Shipped    |
+|            381 | Royale Belge                       |       10366 | Shipped    |
+|            382 | Salzburg Collectables              |       10119 | Shipped    |
+|            382 | Salzburg Collectables              |       10269 | Shipped    |
+|            382 | Salzburg Collectables              |       10341 | Shipped    |
+|            382 | Salzburg Collectables              |       10419 | Shipped    |
+|            385 | Cruz & Sons Co.                    |       10108 | Shipped    |
+|            385 | Cruz & Sons Co.                    |       10198 | Shipped    |
+|            385 | Cruz & Sons Co.                    |       10330 | Shipped    |
+|            386 | L'ordine Souveniers                |       10176 | Shipped    |
+|            386 | L'ordine Souveniers                |       10266 | Shipped    |
+|            386 | L'ordine Souveniers                |       10416 | Shipped    |
+|            398 | Tokyo Collectables, Ltd            |       10258 | Shipped    |
+|            398 | Tokyo Collectables, Ltd            |       10339 | Shipped    |
+|            398 | Tokyo Collectables, Ltd            |       10372 | Shipped    |
+|            398 | Tokyo Collectables, Ltd            |       10408 | Shipped    |
+|            406 | Auto Canal+ Petit                  |       10211 | Shipped    |
+|            406 | Auto Canal+ Petit                  |       10252 | Shipped    |
+|            406 | Auto Canal+ Petit                  |       10402 | Shipped    |
+|            409 | Stuttgart Collectable Exchange     |        NULL | NULL       |
+|            412 | Extreme Desk Decorations, Ltd      |       10234 | Shipped    |
+|            412 | Extreme Desk Decorations, Ltd      |       10268 | Shipped    |
+|            412 | Extreme Desk Decorations, Ltd      |       10418 | Shipped    |
+|            415 | Bavarian Collectables Imports, Co. |       10296 | Shipped    |
+|            424 | Classic Legends Inc.               |       10115 | Shipped    |
+|            424 | Classic Legends Inc.               |       10163 | Shipped    |
+|            424 | Classic Legends Inc.               |       10337 | Shipped    |
+|            443 | Feuer Online Stores, Inc           |        NULL | NULL       |
+|            447 | Gift Ideas Corp.                   |       10131 | Shipped    |
+|            447 | Gift Ideas Corp.                   |       10146 | Shipped    |
+|            447 | Gift Ideas Corp.                   |       10353 | Shipped    |
+|            448 | Scandinavian Gift Ideas            |       10167 | Cancelled  |
+|            448 | Scandinavian Gift Ideas            |       10291 | Shipped    |
+|            448 | Scandinavian Gift Ideas            |       10389 | Shipped    |
+|            450 | The Sharp Gifts Warehouse          |       10250 | Shipped    |
+|            450 | The Sharp Gifts Warehouse          |       10257 | Shipped    |
+|            450 | The Sharp Gifts Warehouse          |       10400 | Shipped    |
+|            450 | The Sharp Gifts Warehouse          |       10407 | On Hold    |
+|            452 | Mini Auto Werke                    |       10164 | Resolved   |
+|            452 | Mini Auto Werke                    |       10170 | Shipped    |
+|            452 | Mini Auto Werke                    |       10392 | Shipped    |
+|            455 | Super Scale Inc.                   |       10196 | Shipped    |
+|            455 | Super Scale Inc.                   |       10245 | Shipped    |
+|            456 | Microscale Inc.                    |       10242 | Shipped    |
+|            456 | Microscale Inc.                    |       10319 | Shipped    |
+|            458 | Corrida Auto Replicas, Ltd         |       10126 | Shipped    |
+|            458 | Corrida Auto Replicas, Ltd         |       10214 | Shipped    |
+|            458 | Corrida Auto Replicas, Ltd         |       10348 | Shipped    |
+|            459 | Warburg Exchange                   |        NULL | NULL       |
+|            462 | FunGiftIdeas.com                   |       10166 | Shipped    |
+|            462 | FunGiftIdeas.com                   |       10321 | Shipped    |
+|            462 | FunGiftIdeas.com                   |       10388 | Shipped    |
+|            465 | Anton Designs, Ltd.                |        NULL | NULL       |
+|            471 | Australian Collectables, Ltd       |       10193 | Shipped    |
+|            471 | Australian Collectables, Ltd       |       10265 | Shipped    |
+|            471 | Australian Collectables, Ltd       |       10415 | Disputed   |
+|            473 | Frau da Collezione                 |       10157 | Shipped    |
+|            473 | Frau da Collezione                 |       10218 | Shipped    |
+|            475 | West Coast Collectables Co.        |       10199 | Shipped    |
+|            475 | West Coast Collectables Co.        |       10215 | Shipped    |
+|            477 | Mit Vergnügen & Co.                |        NULL | NULL       |
+|            480 | Kremlin Collectables, Co.          |        NULL | NULL       |
+|            481 | Raanan Stores, Inc                 |        NULL | NULL       |
+|            484 | Iberia Gift Imports, Corp.         |       10184 | Shipped    |
+|            484 | Iberia Gift Imports, Corp.         |       10303 | Shipped    |
+|            486 | Motor Mint Distributors Inc.       |       10109 | Shipped    |
+|            486 | Motor Mint Distributors Inc.       |       10236 | Shipped    |
+|            486 | Motor Mint Distributors Inc.       |       10331 | Shipped    |
+|            487 | Signal Collectibles Ltd.           |       10149 | Shipped    |
+|            487 | Signal Collectibles Ltd.           |       10219 | Shipped    |
+|            489 | Double Decker Gift Stores, Ltd     |       10186 | Shipped    |
+|            489 | Double Decker Gift Stores, Ltd     |       10213 | Shipped    |
+|            495 | Diecast Collectables               |       10207 | Shipped    |
+|            495 | Diecast Collectables               |       10243 | Shipped    |
+|            496 | Kelly's Gift Shop                  |       10138 | Shipped    |
+|            496 | Kelly's Gift Shop                  |       10179 | Cancelled  |
+|            496 | Kelly's Gift Shop                  |       10360 | Shipped    |
+|            496 | Kelly's Gift Shop                  |       10399 | Shipped    |
++----------------+------------------------------------+-------------+------------+
+350 rows in set (0.01 sec)
+
+mysql> SELECT customers.customerNumber, customers.customerName, orders.orderNumber,orders.status
+    -> FROM customers LEFT JOIN orders
+    -> ON customers.customerNumber = orders.customerNumber
+    -> WHERE orderNumber is null;
++----------------+--------------------------------+-------------+--------+
+| customerNumber | customerName                   | orderNumber | status |
++----------------+--------------------------------+-------------+--------+
+|            125 | Havel & Zbyszek Co             |        NULL | NULL   |
+|            168 | American Souvenirs Inc         |        NULL | NULL   |
+|            169 | Porto Imports Co.              |        NULL | NULL   |
+|            206 | Asian Shopping Network, Co     |        NULL | NULL   |
+|            223 | Natürlich Autos                |        NULL | NULL   |
+|            237 | ANG Resellers                  |        NULL | NULL   |
+|            247 | Messner Shopping Network       |        NULL | NULL   |
+|            273 | Franken Gifts, Co              |        NULL | NULL   |
+|            293 | BG&E Collectables              |        NULL | NULL   |
+|            303 | Schuyler Imports               |        NULL | NULL   |
+|            307 | Der Hund Imports               |        NULL | NULL   |
+|            335 | Cramer Spezialitäten, Ltd      |        NULL | NULL   |
+|            348 | Asian Treasures, Inc.          |        NULL | NULL   |
+|            356 | SAR Distributors, Co           |        NULL | NULL   |
+|            361 | Kommission Auto                |        NULL | NULL   |
+|            369 | Lisboa Souveniers, Inc         |        NULL | NULL   |
+|            376 | Precious Collectables          |        NULL | NULL   |
+|            409 | Stuttgart Collectable Exchange |        NULL | NULL   |
+|            443 | Feuer Online Stores, Inc       |        NULL | NULL   |
+|            459 | Warburg Exchange               |        NULL | NULL   |
+|            465 | Anton Designs, Ltd.            |        NULL | NULL   |
+|            477 | Mit Vergnügen & Co.            |        NULL | NULL   |
+|            480 | Kremlin Collectables, Co.      |        NULL | NULL   |
+|            481 | Raanan Stores, Inc             |        NULL | NULL   |
++----------------+--------------------------------+-------------+--------+
+24 rows in set (0.00 sec)
+
+mysql> SELECT customers.customerNumber, customerName, amount
+    -> FROM customers INNER JOIN payments
+    -> ON customers.customerNumber = payments.customerNumber
+    -> WHERE amount >4000;
++----------------+------------------------------------+-----------+
+| customerNumber | customerName                       | amount    |
++----------------+------------------------------------+-----------+
+|            103 | Atelier graphique                  |   6066.78 |
+|            103 | Atelier graphique                  |  14571.44 |
+|            112 | Signal Gift Stores                 |  14191.12 |
+|            112 | Signal Gift Stores                 |  32641.98 |
+|            112 | Signal Gift Stores                 |  33347.88 |
+|            114 | Australian Collectors, Co.         |  45864.03 |
+|            114 | Australian Collectors, Co.         |  82261.22 |
+|            114 | Australian Collectors, Co.         |   7565.08 |
+|            114 | Australian Collectors, Co.         |  44894.74 |
+|            119 | La Rochelle Gifts                  |  19501.82 |
+|            119 | La Rochelle Gifts                  |  47924.19 |
+|            119 | La Rochelle Gifts                  |  49523.67 |
+|            121 | Baane Mini Imports                 |  50218.95 |
+|            121 | Baane Mini Imports                 |  17876.32 |
+|            121 | Baane Mini Imports                 |  34638.14 |
+|            124 | Mini Gifts Distributors Ltd.       | 101244.59 |
+|            124 | Mini Gifts Distributors Ltd.       |  85410.87 |
+|            124 | Mini Gifts Distributors Ltd.       |  11044.30 |
+|            124 | Mini Gifts Distributors Ltd.       |  83598.04 |
+|            124 | Mini Gifts Distributors Ltd.       |  47142.70 |
+|            124 | Mini Gifts Distributors Ltd.       |  55639.66 |
+|            124 | Mini Gifts Distributors Ltd.       | 111654.40 |
+|            124 | Mini Gifts Distributors Ltd.       |  43369.30 |
+|            124 | Mini Gifts Distributors Ltd.       |  45084.38 |
+|            128 | Blauer See Auto, Co.               |  10549.01 |
+|            128 | Blauer See Auto, Co.               |  24101.81 |
+|            128 | Blauer See Auto, Co.               |  33820.62 |
+|            128 | Blauer See Auto, Co.               |   7466.32 |
+|            129 | Mini Wheels Co.                    |  26248.78 |
+|            129 | Mini Wheels Co.                    |  23923.93 |
+|            129 | Mini Wheels Co.                    |  16537.85 |
+|            131 | Land of Toys Inc.                  |  22292.62 |
+|            131 | Land of Toys Inc.                  |  50025.35 |
+|            131 | Land of Toys Inc.                  |  35321.97 |
+|            141 | Euro+ Shopping Channel             |  36251.03 |
+|            141 | Euro+ Shopping Channel             |  36140.38 |
+|            141 | Euro+ Shopping Channel             |  46895.48 |
+|            141 | Euro+ Shopping Channel             |  59830.55 |
+|            141 | Euro+ Shopping Channel             | 116208.40 |
+|            141 | Euro+ Shopping Channel             |  65071.26 |
+|            141 | Euro+ Shopping Channel             | 120166.58 |
+|            141 | Euro+ Shopping Channel             |  49539.37 |
+|            141 | Euro+ Shopping Channel             |  40206.20 |
+|            141 | Euro+ Shopping Channel             |  63843.55 |
+|            141 | Euro+ Shopping Channel             |  35420.74 |
+|            141 | Euro+ Shopping Channel             |  20009.53 |
+|            141 | Euro+ Shopping Channel             |  26155.91 |
+|            144 | Volvo Model Replicas, Co           |  36005.71 |
+|            144 | Volvo Model Replicas, Co           |   7674.94 |
+|            145 | Danish Wholesale Imports           |   4710.73 |
+|            145 | Danish Wholesale Imports           |  28211.70 |
+|            145 | Danish Wholesale Imports           |  20564.86 |
+|            145 | Danish Wholesale Imports           |  53959.21 |
+|            146 | Saveley & Henriot, Co.             |  40978.53 |
+|            146 | Saveley & Henriot, Co.             |  49614.72 |
+|            146 | Saveley & Henriot, Co.             |  39712.10 |
+|            148 | Dragon Souveniers, Ltd.            |  44380.15 |
+|            148 | Dragon Souveniers, Ltd.            | 105743.00 |
+|            151 | Muscle Machine Inc                 |  58793.53 |
+|            151 | Muscle Machine Inc                 |  20314.44 |
+|            151 | Muscle Machine Inc                 |  58841.35 |
+|            151 | Muscle Machine Inc                 |  39964.63 |
+|            157 | Diecast Classics Inc.              |  35152.12 |
+|            157 | Diecast Classics Inc.              |  63357.13 |
+|            161 | Technics Stores Inc.               |  50743.65 |
+|            161 | Technics Stores Inc.               |  12692.19 |
+|            161 | Technics Stores Inc.               |  38675.13 |
+|            166 | Handji Gifts& Co                   |  38785.48 |
+|            166 | Handji Gifts& Co                   |  44160.92 |
+|            166 | Handji Gifts& Co                   |  22474.17 |
+|            167 | Herkku Gifts                       |  12538.01 |
+|            167 | Herkku Gifts                       |  85024.46 |
+|            171 | Daedalus Designs Imports           |  18997.89 |
+|            171 | Daedalus Designs Imports           |  42783.81 |
+|            172 | La Corne D'abondance, Co.          |  51209.58 |
+|            172 | La Corne D'abondance, Co.          |  33383.14 |
+|            173 | Cambridge Collectables Co.         |  11843.45 |
+|            173 | Cambridge Collectables Co.         |  20355.24 |
+|            175 | Gift Depot Inc.                    |  28500.78 |
+|            175 | Gift Depot Inc.                    |  24879.08 |
+|            175 | Gift Depot Inc.                    |  42044.77 |
+|            177 | Osaka Souveniers Co.               |  15183.63 |
+|            177 | Osaka Souveniers Co.               |  47177.59 |
+|            181 | Vitachrome Inc.                    |  22602.36 |
+|            181 | Vitachrome Inc.                    |   5494.78 |
+|            181 | Vitachrome Inc.                    |  44400.50 |
+|            186 | Toys of Finland, Co.               |  23602.90 |
+|            186 | Toys of Finland, Co.               |  37602.48 |
+|            186 | Toys of Finland, Co.               |  34341.08 |
+|            187 | AV Stores, Co.                     |  52825.29 |
+|            187 | AV Stores, Co.                     |  47159.11 |
+|            187 | AV Stores, Co.                     |  48425.69 |
+|            189 | Clover Collections, Co.            |  17359.53 |
+|            189 | Clover Collections, Co.            |  32538.74 |
+|            198 | Auto-Moto Classics Inc.            |   9658.74 |
+|            198 | Auto-Moto Classics Inc.            |   6036.96 |
+|            198 | Auto-Moto Classics Inc.            |   5858.56 |
+|            201 | UK Collectables, Ltd.              |  23908.24 |
+|            201 | UK Collectables, Ltd.              |  37258.94 |
+|            202 | Canadian Gift Exchange Network     |  36527.61 |
+|            202 | Canadian Gift Exchange Network     |  33594.58 |
+|            204 | Online Mini Collectables           |  51152.86 |
+|            204 | Online Mini Collectables           |   4424.40 |
+|            205 | Toys4GrownUps.com                  |  50342.74 |
+|            205 | Toys4GrownUps.com                  |  39580.60 |
+|            209 | Mini Caravy                        |  35157.75 |
+|            209 | Mini Caravy                        |   4632.31 |
+|            209 | Mini Caravy                        |  36069.26 |
+|            211 | King Kong Collectables, Co.        |  45480.79 |
+|            216 | Enaco Distributors                 |  24945.21 |
+|            216 | Enaco Distributors                 |  40473.86 |
+|            219 | Boards & Toys Co.                  |   4465.85 |
+|            227 | Heintze Collectables               |  36164.46 |
+|            227 | Heintze Collectables               |  53745.34 |
+|            233 | Québec Home Shopping Network       |  29070.38 |
+|            233 | Québec Home Shopping Network       |  22997.45 |
+|            233 | Québec Home Shopping Network       |  16909.84 |
+|            239 | Collectable Mini Designs Co.       |  80375.24 |
+|            240 | giftsbymail.co.uk                  |  46788.14 |
+|            240 | giftsbymail.co.uk                  |  24995.61 |
+|            242 | Alpha Cognac                       |  33818.34 |
+|            242 | Alpha Cognac                       |  12432.32 |
+|            242 | Alpha Cognac                       |  14232.70 |
+|            249 | Amica Models & Co.                 |  33924.24 |
+|            249 | Amica Models & Co.                 |  48298.99 |
+|            250 | Lyon Souveniers                    |  17928.09 |
+|            250 | Lyon Souveniers                    |  26311.63 |
+|            250 | Lyon Souveniers                    |  23419.47 |
+|            256 | Auto Associés & Cie.               |   5759.42 |
+|            256 | Auto Associés & Cie.               |  53116.99 |
+|            259 | Toms Spezialitäten, Ltd            |  61234.67 |
+|            259 | Toms Spezialitäten, Ltd            |  27988.47 |
+|            260 | Royal Canadian Collectables, Ltd.  |  37527.58 |
+|            260 | Royal Canadian Collectables, Ltd.  |  29284.42 |
+|            276 | Anna's Decorations, Ltd            |  27083.78 |
+|            276 | Anna's Decorations, Ltd            |  38547.19 |
+|            276 | Anna's Decorations, Ltd            |  41554.73 |
+|            276 | Anna's Decorations, Ltd            |  29848.52 |
+|            278 | Rovelli Gifts                      |  37654.09 |
+|            278 | Rovelli Gifts                      |  52151.81 |
+|            278 | Rovelli Gifts                      |  37723.79 |
+|            282 | Souveniers And Things Co.          |  24013.52 |
+|            282 | Souveniers And Things Co.          |  35806.73 |
+|            282 | Souveniers And Things Co.          |  31835.36 |
+|            286 | Marta's Replicas Co.               |  47411.33 |
+|            286 | Marta's Replicas Co.               |  43134.04 |
+|            298 | Vida Sport, Ltd                    |  47375.92 |
+|            298 | Vida Sport, Ltd                    |  61402.00 |
+|            299 | Norway Gifts By Mail, Co.          |  36798.88 |
+|            299 | Norway Gifts By Mail, Co.          |  32260.16 |
+|            311 | Oulu Toy Supplies, Inc.            |  46770.52 |
+|            311 | Oulu Toy Supplies, Inc.            |  32723.04 |
+|            311 | Oulu Toy Supplies, Inc.            |  16212.59 |
+|            314 | Petit Auto                         |  45352.47 |
+|            314 | Petit Auto                         |  16901.38 |
+|            319 | Mini Classics                      |  42339.76 |
+|            319 | Mini Classics                      |  36092.40 |
+|            320 | Mini Creations Ltd.                |   8307.28 |
+|            320 | Mini Creations Ltd.                |  41016.75 |
+|            320 | Mini Creations Ltd.                |  52548.49 |
+|            321 | Corporate Gift Ideas Co.           |  85559.12 |
+|            321 | Corporate Gift Ideas Co.           |  46781.66 |
+|            323 | Down Under Souveniers, Inc         |  75020.13 |
+|            323 | Down Under Souveniers, Inc         |  37281.36 |
+|            323 | Down Under Souveniers, Inc         |  39440.59 |
+|            324 | Stylish Desk Decors, Co.           |  13671.82 |
+|            324 | Stylish Desk Decors, Co.           |  29429.14 |
+|            324 | Stylish Desk Decors, Co.           |  37455.77 |
+|            328 | Tekni Collectables Inc.            |   7178.66 |
+|            328 | Tekni Collectables Inc.            |  31102.85 |
+|            333 | Australian Gift Network, Co        |  23936.53 |
+|            333 | Australian Gift Network, Co        |   9821.32 |
+|            333 | Australian Gift Network, Co        |  21432.31 |
+|            334 | Suominen Souveniers                |  45785.34 |
+|            334 | Suominen Souveniers                |  29716.86 |
+|            334 | Suominen Souveniers                |  28394.54 |
+|            339 | Classic Gift Ideas, Inc            |  23333.06 |
+|            339 | Classic Gift Ideas, Inc            |  34606.28 |
+|            344 | CAF Imports                        |  31428.21 |
+|            344 | CAF Imports                        |  15322.93 |
+|            347 | Men 'R' US Retailers, Ltd.         |  21053.69 |
+|            347 | Men 'R' US Retailers, Ltd.         |  20452.50 |
+|            350 | Marseille Mini Autos               |  18888.31 |
+|            350 | Marseille Mini Autos               |  50824.66 |
+|            353 | Reims Collectables                 |  49705.52 |
+|            353 | Reims Collectables                 |  13920.26 |
+|            353 | Reims Collectables                 |  16700.47 |
+|            353 | Reims Collectables                 |  46656.94 |
+|            357 | GiftsForHim.com                    |  20220.04 |
+|            357 | GiftsForHim.com                    |  36442.34 |
+|            362 | Gifts4AllAges.com                  |  18473.71 |
+|            362 | Gifts4AllAges.com                  |  15059.76 |
+|            363 | Online Diecast Creations Co.       |  50799.69 |
+|            363 | Online Diecast Creations Co.       |  10223.83 |
+|            363 | Online Diecast Creations Co.       |  55425.77 |
+|            379 | Collectables For Less Inc.         |  28322.83 |
+|            379 | Collectables For Less Inc.         |  32680.31 |
+|            379 | Collectables For Less Inc.         |  12530.51 |
+|            381 | Royale Belge                       |  12081.52 |
+|            381 | Royale Belge                       |  14379.90 |
+|            382 | Salzburg Collectables              |  35826.33 |
+|            382 | Salzburg Collectables              |   6419.84 |
+|            382 | Salzburg Collectables              |  42813.83 |
+|            385 | Cruz & Sons Co.                    |  20644.24 |
+|            385 | Cruz & Sons Co.                    |  15822.84 |
+|            385 | Cruz & Sons Co.                    |  51001.22 |
+|            386 | L'ordine Souveniers                |  38524.29 |
+|            386 | L'ordine Souveniers                |  51619.02 |
+|            398 | Tokyo Collectables, Ltd            |  33967.73 |
+|            398 | Tokyo Collectables, Ltd            |  22037.91 |
+|            398 | Tokyo Collectables, Ltd            |  48927.64 |
+|            406 | Auto Canal+ Petit                  |  12190.85 |
+|            406 | Auto Canal+ Petit                  |  49165.16 |
+|            406 | Auto Canal+ Petit                  |  25080.96 |
+|            412 | Extreme Desk Decorations, Ltd      |  35034.57 |
+|            412 | Extreme Desk Decorations, Ltd      |  31670.37 |
+|            415 | Bavarian Collectables Imports, Co. |  31310.09 |
+|            424 | Classic Legends Inc.               |  25505.98 |
+|            424 | Classic Legends Inc.               |  21665.98 |
+|            424 | Classic Legends Inc.               |  22042.37 |
+|            447 | Gift Ideas Corp.                   |   6631.36 |
+|            447 | Gift Ideas Corp.                   |  17032.29 |
+|            447 | Gift Ideas Corp.                   |  26304.13 |
+|            448 | Scandinavian Gift Ideas            |  27966.54 |
+|            448 | Scandinavian Gift Ideas            |  48809.90 |
+|            450 | The Sharp Gifts Warehouse          |  59551.38 |
+|            452 | Mini Auto Werke                    |  27121.90 |
+|            452 | Mini Auto Werke                    |  15130.97 |
+|            452 | Mini Auto Werke                    |   8807.12 |
+|            455 | Super Scale Inc.                   |  38139.18 |
+|            455 | Super Scale Inc.                   |  32239.47 |
+|            456 | Microscale Inc.                    |  27550.51 |
+|            458 | Corrida Auto Replicas, Ltd         |  33145.56 |
+|            458 | Corrida Auto Replicas, Ltd         |  22162.61 |
+|            458 | Corrida Auto Replicas, Ltd         |  57131.92 |
+|            462 | FunGiftIdeas.com                   |  30293.77 |
+|            462 | FunGiftIdeas.com                   |   9977.85 |
+|            462 | FunGiftIdeas.com                   |  48355.87 |
+|            471 | Australian Collectables, Ltd       |   9415.13 |
+|            471 | Australian Collectables, Ltd       |  35505.63 |
+|            473 | Frau da Collezione                 |   7612.06 |
+|            473 | Frau da Collezione                 |  17746.26 |
+|            475 | West Coast Collectables Co.        |   7678.25 |
+|            475 | West Coast Collectables Co.        |  36070.47 |
+|            484 | Iberia Gift Imports, Corp.         |  47513.19 |
+|            486 | Motor Mint Distributors Inc.       |   5899.38 |
+|            486 | Motor Mint Distributors Inc.       |  45994.07 |
+|            486 | Motor Mint Distributors Inc.       |  25833.14 |
+|            487 | Signal Collectibles Ltd.           |  29997.09 |
+|            487 | Signal Collectibles Ltd.           |  12573.28 |
+|            489 | Double Decker Gift Stores, Ltd     |  22275.73 |
+|            489 | Double Decker Gift Stores, Ltd     |   7310.42 |
+|            495 | Diecast Collectables               |  59265.14 |
+|            495 | Diecast Collectables               |   6276.60 |
+|            496 | Kelly's Gift Shop                  |  30253.75 |
+|            496 | Kelly's Gift Shop                  |  32077.44 |
+|            496 | Kelly's Gift Shop                  |  52166.00 |
++----------------+------------------------------------+-----------+
+257 rows in set (0.00 sec)
+
+mysql> SELECT customers.customerNumber, customerName, amount
+    ->     -> FROM customers INNER JOIN payments
+    ->     -> ON customers.customerNumber = payments.customerNumber
+    -> WHERE amount >4000
+    -> ORDER BY amount;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM customers INNER JOIN payments
+    -> ON customers.customerNumber = payments' at line 2
+mysql> SELECT customers.customerNumber, customerName, amount
+    -> FROM customers INNER JOIN paymets
+    -> ON customers.customerNumber = payments.customerNumber
+    -> WHERE amount >4000
+    -> ORDER BY amount;
+ERROR 1146 (42S02): Table 'classicmodels.paymets' doesn't exist
+mysql> SELECT customers.customerNumber, customerName, amount
+    -> FROM customers INNER JOIN payments
+    -> ON customers.customerNumber = payments.customerNumber
+    -> WHERE amount >4000
+    -> ORDER BY amount;
++----------------+------------------------------------+-----------+
+| customerNumber | customerName                       | amount    |
++----------------+------------------------------------+-----------+
+|            204 | Online Mini Collectables           |   4424.40 |
+|            219 | Boards & Toys Co.                  |   4465.85 |
+|            209 | Mini Caravy                        |   4632.31 |
+|            145 | Danish Wholesale Imports           |   4710.73 |
+|            181 | Vitachrome Inc.                    |   5494.78 |
+|            256 | Auto Associés & Cie.               |   5759.42 |
+|            198 | Auto-Moto Classics Inc.            |   5858.56 |
+|            486 | Motor Mint Distributors Inc.       |   5899.38 |
+|            198 | Auto-Moto Classics Inc.            |   6036.96 |
+|            103 | Atelier graphique                  |   6066.78 |
+|            495 | Diecast Collectables               |   6276.60 |
+|            382 | Salzburg Collectables              |   6419.84 |
+|            447 | Gift Ideas Corp.                   |   6631.36 |
+|            328 | Tekni Collectables Inc.            |   7178.66 |
+|            489 | Double Decker Gift Stores, Ltd     |   7310.42 |
+|            128 | Blauer See Auto, Co.               |   7466.32 |
+|            114 | Australian Collectors, Co.         |   7565.08 |
+|            473 | Frau da Collezione                 |   7612.06 |
+|            144 | Volvo Model Replicas, Co           |   7674.94 |
+|            475 | West Coast Collectables Co.        |   7678.25 |
+|            320 | Mini Creations Ltd.                |   8307.28 |
+|            452 | Mini Auto Werke                    |   8807.12 |
+|            471 | Australian Collectables, Ltd       |   9415.13 |
+|            198 | Auto-Moto Classics Inc.            |   9658.74 |
+|            333 | Australian Gift Network, Co        |   9821.32 |
+|            462 | FunGiftIdeas.com                   |   9977.85 |
+|            363 | Online Diecast Creations Co.       |  10223.83 |
+|            128 | Blauer See Auto, Co.               |  10549.01 |
+|            124 | Mini Gifts Distributors Ltd.       |  11044.30 |
+|            173 | Cambridge Collectables Co.         |  11843.45 |
+|            381 | Royale Belge                       |  12081.52 |
+|            406 | Auto Canal+ Petit                  |  12190.85 |
+|            242 | Alpha Cognac                       |  12432.32 |
+|            379 | Collectables For Less Inc.         |  12530.51 |
+|            167 | Herkku Gifts                       |  12538.01 |
+|            487 | Signal Collectibles Ltd.           |  12573.28 |
+|            161 | Technics Stores Inc.               |  12692.19 |
+|            324 | Stylish Desk Decors, Co.           |  13671.82 |
+|            353 | Reims Collectables                 |  13920.26 |
+|            112 | Signal Gift Stores                 |  14191.12 |
+|            242 | Alpha Cognac                       |  14232.70 |
+|            381 | Royale Belge                       |  14379.90 |
+|            103 | Atelier graphique                  |  14571.44 |
+|            362 | Gifts4AllAges.com                  |  15059.76 |
+|            452 | Mini Auto Werke                    |  15130.97 |
+|            177 | Osaka Souveniers Co.               |  15183.63 |
+|            344 | CAF Imports                        |  15322.93 |
+|            385 | Cruz & Sons Co.                    |  15822.84 |
+|            311 | Oulu Toy Supplies, Inc.            |  16212.59 |
+|            129 | Mini Wheels Co.                    |  16537.85 |
+|            353 | Reims Collectables                 |  16700.47 |
+|            314 | Petit Auto                         |  16901.38 |
+|            233 | Québec Home Shopping Network       |  16909.84 |
+|            447 | Gift Ideas Corp.                   |  17032.29 |
+|            189 | Clover Collections, Co.            |  17359.53 |
+|            473 | Frau da Collezione                 |  17746.26 |
+|            121 | Baane Mini Imports                 |  17876.32 |
+|            250 | Lyon Souveniers                    |  17928.09 |
+|            362 | Gifts4AllAges.com                  |  18473.71 |
+|            350 | Marseille Mini Autos               |  18888.31 |
+|            171 | Daedalus Designs Imports           |  18997.89 |
+|            119 | La Rochelle Gifts                  |  19501.82 |
+|            141 | Euro+ Shopping Channel             |  20009.53 |
+|            357 | GiftsForHim.com                    |  20220.04 |
+|            151 | Muscle Machine Inc                 |  20314.44 |
+|            173 | Cambridge Collectables Co.         |  20355.24 |
+|            347 | Men 'R' US Retailers, Ltd.         |  20452.50 |
+|            145 | Danish Wholesale Imports           |  20564.86 |
+|            385 | Cruz & Sons Co.                    |  20644.24 |
+|            347 | Men 'R' US Retailers, Ltd.         |  21053.69 |
+|            333 | Australian Gift Network, Co        |  21432.31 |
+|            424 | Classic Legends Inc.               |  21665.98 |
+|            398 | Tokyo Collectables, Ltd            |  22037.91 |
+|            424 | Classic Legends Inc.               |  22042.37 |
+|            458 | Corrida Auto Replicas, Ltd         |  22162.61 |
+|            489 | Double Decker Gift Stores, Ltd     |  22275.73 |
+|            131 | Land of Toys Inc.                  |  22292.62 |
+|            166 | Handji Gifts& Co                   |  22474.17 |
+|            181 | Vitachrome Inc.                    |  22602.36 |
+|            233 | Québec Home Shopping Network       |  22997.45 |
+|            339 | Classic Gift Ideas, Inc            |  23333.06 |
+|            250 | Lyon Souveniers                    |  23419.47 |
+|            186 | Toys of Finland, Co.               |  23602.90 |
+|            201 | UK Collectables, Ltd.              |  23908.24 |
+|            129 | Mini Wheels Co.                    |  23923.93 |
+|            333 | Australian Gift Network, Co        |  23936.53 |
+|            282 | Souveniers And Things Co.          |  24013.52 |
+|            128 | Blauer See Auto, Co.               |  24101.81 |
+|            175 | Gift Depot Inc.                    |  24879.08 |
+|            216 | Enaco Distributors                 |  24945.21 |
+|            240 | giftsbymail.co.uk                  |  24995.61 |
+|            406 | Auto Canal+ Petit                  |  25080.96 |
+|            424 | Classic Legends Inc.               |  25505.98 |
+|            486 | Motor Mint Distributors Inc.       |  25833.14 |
+|            141 | Euro+ Shopping Channel             |  26155.91 |
+|            129 | Mini Wheels Co.                    |  26248.78 |
+|            447 | Gift Ideas Corp.                   |  26304.13 |
+|            250 | Lyon Souveniers                    |  26311.63 |
+|            276 | Anna's Decorations, Ltd            |  27083.78 |
+|            452 | Mini Auto Werke                    |  27121.90 |
+|            456 | Microscale Inc.                    |  27550.51 |
+|            448 | Scandinavian Gift Ideas            |  27966.54 |
+|            259 | Toms Spezialitäten, Ltd            |  27988.47 |
+|            145 | Danish Wholesale Imports           |  28211.70 |
+|            379 | Collectables For Less Inc.         |  28322.83 |
+|            334 | Suominen Souveniers                |  28394.54 |
+|            175 | Gift Depot Inc.                    |  28500.78 |
+|            233 | Québec Home Shopping Network       |  29070.38 |
+|            260 | Royal Canadian Collectables, Ltd.  |  29284.42 |
+|            324 | Stylish Desk Decors, Co.           |  29429.14 |
+|            334 | Suominen Souveniers                |  29716.86 |
+|            276 | Anna's Decorations, Ltd            |  29848.52 |
+|            487 | Signal Collectibles Ltd.           |  29997.09 |
+|            496 | Kelly's Gift Shop                  |  30253.75 |
+|            462 | FunGiftIdeas.com                   |  30293.77 |
+|            328 | Tekni Collectables Inc.            |  31102.85 |
+|            415 | Bavarian Collectables Imports, Co. |  31310.09 |
+|            344 | CAF Imports                        |  31428.21 |
+|            412 | Extreme Desk Decorations, Ltd      |  31670.37 |
+|            282 | Souveniers And Things Co.          |  31835.36 |
+|            496 | Kelly's Gift Shop                  |  32077.44 |
+|            455 | Super Scale Inc.                   |  32239.47 |
+|            299 | Norway Gifts By Mail, Co.          |  32260.16 |
+|            189 | Clover Collections, Co.            |  32538.74 |
+|            112 | Signal Gift Stores                 |  32641.98 |
+|            379 | Collectables For Less Inc.         |  32680.31 |
+|            311 | Oulu Toy Supplies, Inc.            |  32723.04 |
+|            458 | Corrida Auto Replicas, Ltd         |  33145.56 |
+|            112 | Signal Gift Stores                 |  33347.88 |
+|            172 | La Corne D'abondance, Co.          |  33383.14 |
+|            202 | Canadian Gift Exchange Network     |  33594.58 |
+|            242 | Alpha Cognac                       |  33818.34 |
+|            128 | Blauer See Auto, Co.               |  33820.62 |
+|            249 | Amica Models & Co.                 |  33924.24 |
+|            398 | Tokyo Collectables, Ltd            |  33967.73 |
+|            186 | Toys of Finland, Co.               |  34341.08 |
+|            339 | Classic Gift Ideas, Inc            |  34606.28 |
+|            121 | Baane Mini Imports                 |  34638.14 |
+|            412 | Extreme Desk Decorations, Ltd      |  35034.57 |
+|            157 | Diecast Classics Inc.              |  35152.12 |
+|            209 | Mini Caravy                        |  35157.75 |
+|            131 | Land of Toys Inc.                  |  35321.97 |
+|            141 | Euro+ Shopping Channel             |  35420.74 |
+|            471 | Australian Collectables, Ltd       |  35505.63 |
+|            282 | Souveniers And Things Co.          |  35806.73 |
+|            382 | Salzburg Collectables              |  35826.33 |
+|            144 | Volvo Model Replicas, Co           |  36005.71 |
+|            209 | Mini Caravy                        |  36069.26 |
+|            475 | West Coast Collectables Co.        |  36070.47 |
+|            319 | Mini Classics                      |  36092.40 |
+|            141 | Euro+ Shopping Channel             |  36140.38 |
+|            227 | Heintze Collectables               |  36164.46 |
+|            141 | Euro+ Shopping Channel             |  36251.03 |
+|            357 | GiftsForHim.com                    |  36442.34 |
+|            202 | Canadian Gift Exchange Network     |  36527.61 |
+|            299 | Norway Gifts By Mail, Co.          |  36798.88 |
+|            201 | UK Collectables, Ltd.              |  37258.94 |
+|            323 | Down Under Souveniers, Inc         |  37281.36 |
+|            324 | Stylish Desk Decors, Co.           |  37455.77 |
+|            260 | Royal Canadian Collectables, Ltd.  |  37527.58 |
+|            186 | Toys of Finland, Co.               |  37602.48 |
+|            278 | Rovelli Gifts                      |  37654.09 |
+|            278 | Rovelli Gifts                      |  37723.79 |
+|            455 | Super Scale Inc.                   |  38139.18 |
+|            386 | L'ordine Souveniers                |  38524.29 |
+|            276 | Anna's Decorations, Ltd            |  38547.19 |
+|            161 | Technics Stores Inc.               |  38675.13 |
+|            166 | Handji Gifts& Co                   |  38785.48 |
+|            323 | Down Under Souveniers, Inc         |  39440.59 |
+|            205 | Toys4GrownUps.com                  |  39580.60 |
+|            146 | Saveley & Henriot, Co.             |  39712.10 |
+|            151 | Muscle Machine Inc                 |  39964.63 |
+|            141 | Euro+ Shopping Channel             |  40206.20 |
+|            216 | Enaco Distributors                 |  40473.86 |
+|            146 | Saveley & Henriot, Co.             |  40978.53 |
+|            320 | Mini Creations Ltd.                |  41016.75 |
+|            276 | Anna's Decorations, Ltd            |  41554.73 |
+|            175 | Gift Depot Inc.                    |  42044.77 |
+|            319 | Mini Classics                      |  42339.76 |
+|            171 | Daedalus Designs Imports           |  42783.81 |
+|            382 | Salzburg Collectables              |  42813.83 |
+|            286 | Marta's Replicas Co.               |  43134.04 |
+|            124 | Mini Gifts Distributors Ltd.       |  43369.30 |
+|            166 | Handji Gifts& Co                   |  44160.92 |
+|            148 | Dragon Souveniers, Ltd.            |  44380.15 |
+|            181 | Vitachrome Inc.                    |  44400.50 |
+|            114 | Australian Collectors, Co.         |  44894.74 |
+|            124 | Mini Gifts Distributors Ltd.       |  45084.38 |
+|            314 | Petit Auto                         |  45352.47 |
+|            211 | King Kong Collectables, Co.        |  45480.79 |
+|            334 | Suominen Souveniers                |  45785.34 |
+|            114 | Australian Collectors, Co.         |  45864.03 |
+|            486 | Motor Mint Distributors Inc.       |  45994.07 |
+|            353 | Reims Collectables                 |  46656.94 |
+|            311 | Oulu Toy Supplies, Inc.            |  46770.52 |
+|            321 | Corporate Gift Ideas Co.           |  46781.66 |
+|            240 | giftsbymail.co.uk                  |  46788.14 |
+|            141 | Euro+ Shopping Channel             |  46895.48 |
+|            124 | Mini Gifts Distributors Ltd.       |  47142.70 |
+|            187 | AV Stores, Co.                     |  47159.11 |
+|            177 | Osaka Souveniers Co.               |  47177.59 |
+|            298 | Vida Sport, Ltd                    |  47375.92 |
+|            286 | Marta's Replicas Co.               |  47411.33 |
+|            484 | Iberia Gift Imports, Corp.         |  47513.19 |
+|            119 | La Rochelle Gifts                  |  47924.19 |
+|            249 | Amica Models & Co.                 |  48298.99 |
+|            462 | FunGiftIdeas.com                   |  48355.87 |
+|            187 | AV Stores, Co.                     |  48425.69 |
+|            448 | Scandinavian Gift Ideas            |  48809.90 |
+|            398 | Tokyo Collectables, Ltd            |  48927.64 |
+|            406 | Auto Canal+ Petit                  |  49165.16 |
+|            119 | La Rochelle Gifts                  |  49523.67 |
+|            141 | Euro+ Shopping Channel             |  49539.37 |
+|            146 | Saveley & Henriot, Co.             |  49614.72 |
+|            353 | Reims Collectables                 |  49705.52 |
+|            131 | Land of Toys Inc.                  |  50025.35 |
+|            121 | Baane Mini Imports                 |  50218.95 |
+|            205 | Toys4GrownUps.com                  |  50342.74 |
+|            161 | Technics Stores Inc.               |  50743.65 |
+|            363 | Online Diecast Creations Co.       |  50799.69 |
+|            350 | Marseille Mini Autos               |  50824.66 |
+|            385 | Cruz & Sons Co.                    |  51001.22 |
+|            204 | Online Mini Collectables           |  51152.86 |
+|            172 | La Corne D'abondance, Co.          |  51209.58 |
+|            386 | L'ordine Souveniers                |  51619.02 |
+|            278 | Rovelli Gifts                      |  52151.81 |
+|            496 | Kelly's Gift Shop                  |  52166.00 |
+|            320 | Mini Creations Ltd.                |  52548.49 |
+|            187 | AV Stores, Co.                     |  52825.29 |
+|            256 | Auto Associés & Cie.               |  53116.99 |
+|            227 | Heintze Collectables               |  53745.34 |
+|            145 | Danish Wholesale Imports           |  53959.21 |
+|            363 | Online Diecast Creations Co.       |  55425.77 |
+|            124 | Mini Gifts Distributors Ltd.       |  55639.66 |
+|            458 | Corrida Auto Replicas, Ltd         |  57131.92 |
+|            151 | Muscle Machine Inc                 |  58793.53 |
+|            151 | Muscle Machine Inc                 |  58841.35 |
+|            495 | Diecast Collectables               |  59265.14 |
+|            450 | The Sharp Gifts Warehouse          |  59551.38 |
+|            141 | Euro+ Shopping Channel             |  59830.55 |
+|            259 | Toms Spezialitäten, Ltd            |  61234.67 |
+|            298 | Vida Sport, Ltd                    |  61402.00 |
+|            157 | Diecast Classics Inc.              |  63357.13 |
+|            141 | Euro+ Shopping Channel             |  63843.55 |
+|            141 | Euro+ Shopping Channel             |  65071.26 |
+|            323 | Down Under Souveniers, Inc         |  75020.13 |
+|            239 | Collectable Mini Designs Co.       |  80375.24 |
+|            114 | Australian Collectors, Co.         |  82261.22 |
+|            124 | Mini Gifts Distributors Ltd.       |  83598.04 |
+|            167 | Herkku Gifts                       |  85024.46 |
+|            124 | Mini Gifts Distributors Ltd.       |  85410.87 |
+|            321 | Corporate Gift Ideas Co.           |  85559.12 |
+|            124 | Mini Gifts Distributors Ltd.       | 101244.59 |
+|            148 | Dragon Souveniers, Ltd.            | 105743.00 |
+|            124 | Mini Gifts Distributors Ltd.       | 111654.40 |
+|            141 | Euro+ Shopping Channel             | 116208.40 |
+|            141 | Euro+ Shopping Channel             | 120166.58 |
++----------------+------------------------------------+-----------+
+257 rows in set (0.00 sec)
+
+mysql>
